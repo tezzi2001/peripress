@@ -1,0 +1,1 @@
+web: java $JAVA_OPTS -jar target/Peripress-1.0-SNAPSHOT.war --server.port=$PORT target/*.war
