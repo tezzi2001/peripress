@@ -1,0 +1,24 @@
+[type="radio"]:checked + span:after,
+[type="radio"].with-gap:checked + span:before,
+[type="radio"].with-gap:checked + span:after {
+    border: 2px solid #1a237e;
+}
+
+[type="radio"]:checked + span:after,
+[type="radio"].with-gap:checked + span:after {
+    background-color: #1a237e;
+}
+
+.input-field .prefix.active {
+    color: #1a237e;
+}
+
+textarea.materialize-textarea:focus:not([readonly]) { !important;
+    border-bottom: 1px solid #1a237e;
+    -webkit-box-shadow: 0 1px 0 0 #1a237e;
+    box-shadow: 0 1px 0 0 #1a237e;
+}
+
+textarea.materialize-textarea:focus:not([readonly]) + label { !important;
+    color: #1a237e;
+}
