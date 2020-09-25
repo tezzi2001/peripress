@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <title>Peripress | Home</title>
     <link rel="shortcut icon" type="image/png" href="${pageContext.request.contextPath}/img/logo.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/materialize.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form-colors.css">
     <style>
