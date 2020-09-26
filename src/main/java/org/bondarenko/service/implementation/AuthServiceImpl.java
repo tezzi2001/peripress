@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(String login, String rawPassword) {
-
+        passwordEncryptor.encode(rawPassword);
     }
 
     @Override
