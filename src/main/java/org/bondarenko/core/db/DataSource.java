@@ -32,20 +32,6 @@ public class DataSource {
         ds = new HikariDataSource(config);
     }
 
-    private String getDbUrl() {
-        FileInputStream fis;
-        Properties property = new Properties();
-
-        try {
-            fis = new FileInputStream("src/main/webapp/resources/db.properties");
-            property.load(fis);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return property.getProperty("db.url");
-    }
-
     private URI urlToUri(String dbUrl) {
         try {
             return new URI(dbUrl);
