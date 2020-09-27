@@ -1,7 +1,6 @@
 package org.bondarenko.core;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.HashMap;
 import java.util.Map;
 
