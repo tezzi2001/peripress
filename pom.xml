@@ -55,9 +55,51 @@
             <artifactId>reflections</artifactId>
             <version>0.9.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <level>DEBUG</level>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <os>
+                    <family>Unix</family>
+                </os>
+            </activation>
+            <properties>
+                <level>INFO</level>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
+        <testOutputDirectory>${basedir}/target/classes</testOutputDirectory>
+        <filters>
+            <filter>src/main/resources/log4j.xml</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
