@@ -1,9 +1,6 @@
 package org.bondarenko.db.dao.impl;
 
-import org.bondarenko.db.dao.Dao;
-import org.bondarenko.db.dao.PublicationDao;
-import org.bondarenko.db.dao.UserDao;
-import org.bondarenko.db.dao.UserPublishingHouseDao;
+import org.bondarenko.db.dao.*;
 import org.bondarenko.db.entity.Publication;
 import org.bondarenko.db.entity.PublishingHouse;
 import org.bondarenko.db.entity.User;
@@ -16,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> implements Dao<PublishingHouse> {
+public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> implements PublishingHouseDao {
     private static final String FIND_ALL_QUERY = "SELECT * FROM publishing_house_t;";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM publishing_house_t WHERE id = ?;";
     private static final String SAVE_QUERY = "INSERT INTO publishing_house_t (title, description, main_image, subscripts_count, view_count, subscription_price_usd) VALUES (?, ?, ?, ?, ?, ?);";

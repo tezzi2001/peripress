@@ -1,9 +1,8 @@
 package org.bondarenko.db.dao.impl;
 
-import org.bondarenko.db.dao.Dao;
 import org.bondarenko.db.dao.PublicationDao;
+import org.bondarenko.db.dao.PublishingHouseDao;
 import org.bondarenko.db.entity.Publication;
-import org.bondarenko.db.entity.PublishingHouse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
     private static final String FIND_BY_PUBLISHING_HOUSE_ID_QUERY = "SELECT * FROM publication_t WHERE publishing_house_id = ?;";
     private static final String UPDATE_QUERY = "UPDATE publication_t SET title = ?, content = ?, main_image = ?, publishing_house_id = ? WHERE id = ?;";
 
-    private static final Dao<PublishingHouse> PUBLISHING_HOUSE_DAO = new PublishingHouseDaoImpl();
+    private static final PublishingHouseDao PUBLISHING_HOUSE_DAO = new PublishingHouseDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicationDaoImpl.class);
 
     @Override

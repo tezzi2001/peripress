@@ -3,7 +3,7 @@ package org.bondarenko.db.dao;
 import java.util.List;
 import java.util.Optional;
 
-public interface Dao<T> {
+interface Dao<T> {
     public Optional<T> find(long id);
     public List<T> findAll();
     public boolean save(T entity);
