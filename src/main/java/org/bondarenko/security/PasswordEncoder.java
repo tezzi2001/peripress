@@ -11,9 +11,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
-public class PasswordEncryptor {
+public class PasswordEncoder {
     private static final SecretKeyFactory FACTORY;
-    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordEncryptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordEncoder.class);
 
     static {
         SecretKeyFactory tempFactory = null;

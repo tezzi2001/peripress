@@ -1,15 +1,15 @@
 package org.bondarenko.service.implementation;
 
-import org.bondarenko.security.PasswordEncryptor;
+import org.bondarenko.security.PasswordEncoder;
 import org.bondarenko.service.AuthService;
 
 import javax.servlet.http.HttpSession;
 
 public class AuthServiceImpl implements AuthService {
-    private final PasswordEncryptor passwordEncryptor;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImpl() {
-        this.passwordEncryptor = new PasswordEncryptor();
+        this.passwordEncoder = new PasswordEncoder();
     }
 
     @Override
@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(String login, String rawPassword) {
-        passwordEncryptor.encode(rawPassword);
+        passwordEncoder.encode(rawPassword);
     }
 
     @Override
