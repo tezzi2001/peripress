@@ -3,8 +3,7 @@ package org.bondarenko.core.filter;
 public enum Role {
     USER("USER"),
     ADMIN("ADMIN"),
-    MODERATOR("MODERATOR"),
-    PUBLISHER("PUBLISHER");
+    MODERATOR("MODERATOR");
 
     private final String role;
 
