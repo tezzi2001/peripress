@@ -8,6 +8,8 @@ import org.bondarenko.db.entity.Publication;
 import org.bondarenko.db.entity.PublishingHouse;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.db.entity.UserPublishingHouse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
     private static final UserDao USER_DAO = new UserDaoImpl();
     private static final PublicationDao PUBLICATION_DAO = new PublicationDaoImpl();
     private static final UserPublishingHouseDao USER_PUBLISHING_HOUSE_DAO = new UserPublishingHouseDaoImpl();
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublishingHouseDaoImpl.class);
 
     @Override
     public Optional<PublishingHouse> find(long id) {
@@ -36,7 +39,7 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return Optional.empty();
     }
@@ -51,7 +54,7 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
                 publishingHouses.add(getPublishingHouse(resultSet));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return publishingHouses;
     }
@@ -101,7 +104,7 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return false;
     }
@@ -135,7 +138,7 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return false;
     }

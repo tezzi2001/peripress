@@ -2,6 +2,8 @@ package org.bondarenko.db.dao.impl;
 
 import org.bondarenko.db.dao.UserPublishingHouseDao;
 import org.bondarenko.db.entity.UserPublishingHouse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
     private static final String FIND_BY_PUBLISHING_HOUSE_ID_QUERY = "SELECT * FROM user_publishing_house_t WHERE publishing_house_id = ?;";
     private static final String SAVE_QUERY = "INSERT INTO user_publishing_house_t (user_id, publishing_house_id) VALUES (?, ?);";
     private static final String DELETE_BY_PUBLISHING_HOUSE_ID_QUERY = "DELETE FROM user_publishing_house_t WHERE publishing_house_id = ?;";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserPublishingHouseDaoImpl.class);
 
     @Override
     @Deprecated
@@ -31,7 +35,7 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
                 publishingHouses.add(getPublishingHouse(resultSet));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return publishingHouses;
     }
@@ -53,7 +57,7 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return false;
     }
@@ -89,14 +93,14 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return userPublishingHouses;
     }
 
     @Override
     @Deprecated
-    protected boolean update(org.bondarenko.db.dao.impl.UserPublishingHouseDaoImpl userPublishingHouseDao) {
+    protected boolean update(UserPublishingHouseDaoImpl userPublishingHouseDao) {
         return false;
     }
 }

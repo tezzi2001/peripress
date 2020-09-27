@@ -2,6 +2,8 @@ package org.bondarenko.core.db;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,6 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DataSource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSource.class);
     private final HikariDataSource ds;
 
     public DataSource() {
@@ -27,12 +30,14 @@ public class DataSource {
         config.setDriverClassName("org.postgresql.Driver");
 
         ds = new HikariDataSource(config);
+        LOGGER.info("connected to DB {}", url);
     }
 
     private URI urlToUri(String dbUrl) {
         try {
             return new URI(dbUrl);
         } catch (URISyntaxException e) {
+            LOGGER.error("database URL is invalid", e);
             throw new RuntimeException("database URL is invalid", e);
         }
     }

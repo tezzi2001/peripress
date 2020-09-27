@@ -4,6 +4,8 @@ import org.bondarenko.core.annotation.Controller;
 import org.bondarenko.core.annotation.Mapping;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,6 +22,7 @@ import java.util.*;
 @WebServlet("/")
 public class DispatcherServlet extends HttpServlet {
     private final Map<String, String> controllers = new HashMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
 
     @Override
     public void init() throws ServletException {
@@ -33,7 +36,7 @@ public class DispatcherServlet extends HttpServlet {
                     controllers.put(controllerAnnotation.value(), name);
                 }
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                LOGGER.warn("", e);
             }
         }
     }
@@ -110,7 +113,7 @@ public class DispatcherServlet extends HttpServlet {
                     }
                 }
             } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                e.printStackTrace();
+                LOGGER.warn("", e);
             }
 
             return new AttributesAndView();

@@ -6,6 +6,8 @@ import org.bondarenko.db.dao.UserPublishingHouseDao;
 import org.bondarenko.db.entity.PublishingHouse;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.db.entity.UserPublishingHouse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     private static final String UPDATE_QUERY = "UPDATE user_t SET username = ?, password = ?, email = ?, role = ? WHERE id = ?;";
 
     private static final UserPublishingHouseDao USER_PUBLISHING_HOUSE_DAO = new UserPublishingHouseDaoImpl();
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
     @Override
     public Optional<User> find(long id) {
@@ -33,7 +36,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return Optional.empty();
     }
@@ -48,7 +51,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
                 users.add(getUser(resultSet));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return users;
     }
@@ -89,7 +92,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
                 USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return false;
     }
@@ -152,7 +155,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return false;
     }

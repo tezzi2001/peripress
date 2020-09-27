@@ -4,6 +4,8 @@ import org.bondarenko.db.dao.Dao;
 import org.bondarenko.db.dao.PublicationDao;
 import org.bondarenko.db.entity.Publication;
 import org.bondarenko.db.entity.PublishingHouse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
     private static final String UPDATE_QUERY = "UPDATE publication_t SET title = ?, content = ?, main_image = ?, publishing_house_id = ? WHERE id = ?;";
 
     private static final Dao<PublishingHouse> PUBLISHING_HOUSE_DAO = new PublishingHouseDaoImpl();
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicationDaoImpl.class);
 
     @Override
     public Optional<Publication> find(long id) {
@@ -31,7 +34,7 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return Optional.empty();
     }
@@ -46,7 +49,7 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
                 publications.add(getPublication(resultSet));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return publications;
     }
@@ -83,7 +86,7 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return false;
     }
@@ -110,7 +113,7 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return publications;
     }
@@ -128,7 +131,7 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         return false;
     }

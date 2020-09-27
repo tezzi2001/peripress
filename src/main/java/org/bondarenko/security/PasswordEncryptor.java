@@ -1,5 +1,8 @@
 package org.bondarenko.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
@@ -10,13 +13,14 @@ import java.util.Arrays;
 
 public class PasswordEncryptor {
     private static final SecretKeyFactory FACTORY;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordEncryptor.class);
 
     static {
         SecretKeyFactory tempFactory = null;
         try {
             tempFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
         }
         FACTORY = tempFactory;
     }
@@ -33,7 +37,7 @@ public class PasswordEncryptor {
         try {
             return FACTORY.generateSecret(spec).getEncoded();
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+            LOGGER.warn("", e);
             return new byte[0];
         }
     }
