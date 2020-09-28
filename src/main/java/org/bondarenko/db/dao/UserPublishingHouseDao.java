@@ -7,4 +7,5 @@ import java.util.List;
 public interface UserPublishingHouseDao extends Dao<UserPublishingHouse> {
     public List<UserPublishingHouse> findAllByUserId(long userId);
     public List<UserPublishingHouse> findAllByPublishingHouseId(long publishingHouseId);
+    public boolean deleteByUserId(long userId);
 }

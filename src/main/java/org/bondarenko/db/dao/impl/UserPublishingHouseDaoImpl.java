@@ -16,6 +16,8 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
     private static final String FIND_BY_PUBLISHING_HOUSE_ID_QUERY = "SELECT * FROM user_publishing_house_t WHERE publishing_house_id = ?;";
     private static final String SAVE_QUERY = "INSERT INTO user_publishing_house_t (user_id, publishing_house_id) VALUES (?, ?);";
     private static final String DELETE_BY_PUBLISHING_HOUSE_ID_QUERY = "DELETE FROM user_publishing_house_t WHERE publishing_house_id = ?;";
+    private static final String DELETE_BY_USER_ID_QUERY = "DELETE FROM user_publishing_house_t WHERE user_id = ?;";
+    private static final String DELETE_BY_PUBLISHING_HOUSE_ID_AND_USER_ID_QUERY = "DELETE FROM user_publishing_house_t WHERE publishing_house_id = ? AND user_id = ?;";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserPublishingHouseDaoImpl.class);
 
@@ -69,7 +71,17 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
 
     @Override
     public boolean delete(UserPublishingHouse userPublishingHouse) {
-        return delete(userPublishingHouse.getPublishingHouseId());
+        try (Connection connection = DATA_SOURCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_BY_PUBLISHING_HOUSE_ID_AND_USER_ID_QUERY)) {
+            statement.setLong(1, userPublishingHouse.getPublishingHouseId());
+            statement.setLong(2, userPublishingHouse.getUserId());
+            if (statement.executeUpdate() == 1) {
+                return true;
+            }
+        } catch (SQLException e) {
+            LOGGER.trace("", e);
+        }
+        return false;
     }
 
     @Override
@@ -80,6 +92,11 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
     @Override
     public List<UserPublishingHouse> findAllByPublishingHouseId(long publishingHouseId) {
         return find(publishingHouseId, FIND_BY_PUBLISHING_HOUSE_ID_QUERY);
+    }
+
+    @Override
+    public boolean deleteByUserId(long userId) {
+        return delete(userId, DELETE_BY_USER_ID_QUERY);
     }
 
     private List<UserPublishingHouse> find(long id, String query) {

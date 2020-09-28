@@ -1,5 +1,9 @@
 package org.bondarenko.db.entity;
 
+import org.bondarenko.db.dao.impl.PublicationDaoImpl;
+import org.bondarenko.db.dao.impl.UserDaoImpl;
+import org.bondarenko.db.dao.impl.UserPublishingHouseDaoImpl;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,10 +17,6 @@ public class PublishingHouse {
     private int subscriptionPriceUsd;
     private List<Publication> publications;
     private List<User> subscribers;
-
-    public PublishingHouse() {
-        publications = new ArrayList<>();
-    }
 
     public long getId() {
         return id;
@@ -74,20 +74,24 @@ public class PublishingHouse {
         this.subscriptionPriceUsd = subscriptionPriceUsd;
     }
 
-    public void addPublication(Publication publication) {
-        publications.add(publication);
-    }
-
     public List<Publication> getPublications() {
+        if (publications == null) {
+            publications = new ArrayList<>();
+            setPublications(new PublicationDaoImpl().findAllByPublishingHouseId(id));
+        }
         return publications;
     }
 
     public List<User> getSubscribers() {
+        if (subscribers == null) {
+            subscribers = new ArrayList<>();
+            List<UserPublishingHouse> userPublishingHouses = new UserPublishingHouseDaoImpl().findAllByPublishingHouseId(id);
+            for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
+                subscribers.add(new UserDaoImpl().find(userPublishingHouse.getUserId()).orElse(null));
+            }
+            setSubscribers(subscribers);
+        }
         return subscribers;
-    }
-
-    public void addSubscribers(User subscriber) {
-        subscribers.add(subscriber);
     }
 
     public void setPublications(List<Publication> publications) {
