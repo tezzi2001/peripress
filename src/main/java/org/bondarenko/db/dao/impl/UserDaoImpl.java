@@ -1,6 +1,7 @@
 package org.bondarenko.db.dao.impl;
 
 import org.bondarenko.core.filter.Role;
+import org.bondarenko.db.dao.PublishingHouseDao;
 import org.bondarenko.db.dao.UserDao;
 import org.bondarenko.db.dao.UserPublishingHouseDao;
 import org.bondarenko.db.entity.PublishingHouse;
@@ -23,6 +24,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     private static final String UPDATE_QUERY = "UPDATE user_t SET username = ?, password = ?, email = ?, role = ? WHERE id = ?;";
 
     private static final UserPublishingHouseDao USER_PUBLISHING_HOUSE_DAO = new UserPublishingHouseDaoImpl();
+    private static final PublishingHouseDao PUBLISHING_HOUSE_DAO = new PublishingHouseDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
     @Override
@@ -58,11 +60,20 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 
     private User getUser(ResultSet resultSet) throws SQLException {
         User user = new User();
-        user.setId(resultSet.getLong("id"));
+        long id = resultSet.getLong("id");
+        user.setId(id);
         user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getBytes("password"));
         user.setEmail(resultSet.getString("email"));
         user.setRole(Role.valueOf(resultSet.getString("role")));
+
+        List<UserPublishingHouse> userPublishingHouses = USER_PUBLISHING_HOUSE_DAO.findAllByUserId(id);
+        List<PublishingHouse> subscriptions = new ArrayList<>();
+        for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
+            subscriptions.add(PUBLISHING_HOUSE_DAO.find(userPublishingHouse.getPublishingHouseId()).orElse(null));
+        }
+        user.setSubscriptions(subscriptions);
+
         return user;
     }
 
