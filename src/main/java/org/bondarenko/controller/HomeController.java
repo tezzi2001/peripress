@@ -4,7 +4,7 @@ import org.bondarenko.core.AttributesAndView;
 import org.bondarenko.core.annotation.Controller;
 import org.bondarenko.core.annotation.Mapping;
 import org.bondarenko.service.AuthService;
-import org.bondarenko.service.implementation.AuthServiceImpl;
+import org.bondarenko.service.impl.AuthServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

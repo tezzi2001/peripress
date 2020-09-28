@@ -1,4 +1,4 @@
-package org.bondarenko.service.implementation;
+package org.bondarenko.service.impl;
 
 import org.bondarenko.security.PasswordEncoder;
 import org.bondarenko.service.AuthService;
