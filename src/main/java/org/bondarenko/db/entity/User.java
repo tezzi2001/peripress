@@ -1,6 +1,8 @@
 package org.bondarenko.db.entity;
 
 import org.bondarenko.core.filter.Role;
+import org.bondarenko.db.dao.impl.PublishingHouseDaoImpl;
+import org.bondarenko.db.dao.impl.UserPublishingHouseDaoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +14,6 @@ public class User {
     private String email;
     private Role role;
     private List<PublishingHouse> subscriptions;
-
-    public User() {
-        subscriptions = new ArrayList<>();
-    }
 
     public long getId() {
         return id;
@@ -58,6 +56,13 @@ public class User {
     }
 
     public List<PublishingHouse> getSubscriptions() {
+        if (subscriptions == null) {
+            subscriptions = new ArrayList<>();
+            List<UserPublishingHouse> userPublishingHouses = new UserPublishingHouseDaoImpl().findAllByUserId(id);
+            for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
+                subscriptions.add(new PublishingHouseDaoImpl().find(userPublishingHouse.getPublishingHouseId()).orElse(null));
+            }
+        }
         return subscriptions;
     }
 
