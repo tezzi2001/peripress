@@ -63,7 +63,6 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
         return publication;
     }
 
-    // does not update dependent entities
     @Override
     public boolean save(Publication publication) {
         if (find(publication.getId()).isPresent()) {
