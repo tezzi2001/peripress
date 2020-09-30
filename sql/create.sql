@@ -8,7 +8,7 @@ CREATE TABLE user_t
     id BIGINT GENERATED ALWAYS AS IDENTITY,
     username VARCHAR(15) NOT NULL UNIQUE,
     password BYTEA NOT NULL,
-    email VARCHAR NOT NULL,
+    email VARCHAR NOT NULL UNIQUE,
     role VARCHAR NOT NULL,
     PRIMARY KEY (id)
 );
@@ -22,6 +22,11 @@ CREATE TABLE publishing_house_t
     subscripts_count INT DEFAULT 0 NOT NULL,
     view_count INT DEFAULT 0 NOT NULL ,
     subscription_price_usd INT DEFAULT 0 NOT NULL,
+    publisher BIGINT NOT NULL,
+    CONSTRAINT fk_publisher
+        FOREIGN KEY (publisher)
+            REFERENCES user_t (id)
+                ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
 
