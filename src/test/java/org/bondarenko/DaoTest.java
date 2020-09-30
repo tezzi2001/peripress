@@ -1,23 +1,18 @@
 package org.bondarenko;
 
 import org.bondarenko.core.filter.Role;
+import org.bondarenko.db.dao.impl.PublicationDaoImpl;
+import org.bondarenko.db.dao.impl.PublishingHouseDaoImpl;
+import org.bondarenko.db.dao.impl.UserDaoImpl;
 import org.bondarenko.db.entity.Publication;
 import org.bondarenko.db.entity.PublishingHouse;
 import org.bondarenko.db.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-
-public class DaoTest {
+class DaoTest {
     @Test
-    public void test() {
-        PublishingHouse publishingHouse = new PublishingHouse();
-        publishingHouse.setTitle("title");
-        publishingHouse.setDescription("description");
-        publishingHouse.setMainImage("main image");
-        new org.bondarenko.db.dao.impl.PublishingHouseDaoImpl().save(publishingHouse);
-
+    void test() {
         User user = new User();
         user.setUsername("tezz");
         final byte[] bytes = new byte[10];
@@ -27,17 +22,22 @@ public class DaoTest {
         user.setPassword(bytes);
         user.setEmail("tezzi@gmail.com");
         user.setRole(Role.ADMIN);
-        user.setSubscriptions(new ArrayList<PublishingHouse>() {{
-            add(publishingHouse);
-        }});
-        new org.bondarenko.db.dao.impl.UserDaoImpl().save(user);
+        new UserDaoImpl().save(user);
+
+        PublishingHouse publishingHouse = new PublishingHouse();
+        publishingHouse.setTitle("title");
+        publishingHouse.setDescription("description");
+        publishingHouse.setMainImage("main image");
+        publishingHouse.setPublisher(user);
+        new PublishingHouseDaoImpl().save(publishingHouse);
+
 
         Publication publication = new Publication();
         publication.setPublishingHouse(publishingHouse);
         publication.setTitle("a title");
         publication.setContent("a content");
         publication.setMainImage("a main image");
-        new org.bondarenko.db.dao.impl.PublicationDaoImpl().save(publication);
+        new PublicationDaoImpl().save(publication);
 
         Assertions.assertTrue(true);
     }
