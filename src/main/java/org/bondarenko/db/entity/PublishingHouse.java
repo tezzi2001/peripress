@@ -17,6 +17,7 @@ public class PublishingHouse {
     private int subscriptionPriceUsd;
     private List<Publication> publications;
     private List<User> subscribers;
+    private User publisher;
 
     public long getId() {
         return id;
@@ -102,4 +103,11 @@ public class PublishingHouse {
         this.subscribers = subscribers;
     }
 
+    public User getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(User publisher) {
+        this.publisher = publisher;
+    }
 }

@@ -64,25 +64,38 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
     }
 
     @Override
-    public boolean save(Publication publication) {
-        if (find(publication.getId()).isPresent()) {
-            return update(publication);
-        }
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SAVE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, publication.getContent());
-            statement.setString(2, publication.getMainImage());
-            statement.setString(3, publication.getTitle());
-            long publishingHouseId = publication.getPublishingHouse().getId();
-            statement.setLong(4, publishingHouseId);
-            if (statement.executeUpdate() != 1) {
-                return false;
-            }
-            try (ResultSet resultSet = statement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    publication.setId(resultSet.getLong(1));
-                }
-            }
+    public boolean save(Publication... publications) {
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            for (Publication publication : publications) {
+                try (PreparedStatement statement = connection.prepareStatement(SAVE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                     if (find(publication.getId()).isPresent()) {
+                         if (!update(publication)) {
+                             continue;
+                         } else {
+                             connection.rollback();
+                             return false;
+                         }
+                     }
+                     statement.setString(1, publication.getContent());
+                     statement.setString(2, publication.getMainImage());
+                     statement.setString(3, publication.getTitle());
+                     long publishingHouseId = publication.getPublishingHouse().getId();
+                     statement.setLong(4, publishingHouseId);
+                     if (statement.executeUpdate() != 1) {
+                         connection.rollback();
+                         return false;
+                     }
+                     try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                         if (resultSet.next()) {
+                             publication.setId(resultSet.getLong(1));
+                         }
+                     }
+                 }
+                 connection.commit();
+                 return true;
+             }
         } catch (SQLException e) {
             LOGGER.warn("", e);
         }
@@ -90,13 +103,17 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
     }
 
     @Override
-    public boolean delete(long id) {
-        return delete(id, DELETE_BY_ID_QUERY);
+    public boolean delete(long... ids) {
+        return delete(DELETE_BY_ID_QUERY, ids);
     }
 
     @Override
-    public boolean delete(Publication publication) {
-        return delete(publication.getId());
+    public boolean delete(Publication... publication) {
+        long[] publicationIds = new long[publication.length];
+        for (int i = 0; i < publicationIds.length; i++) {
+            publicationIds[i] = publication[i].getId();
+        }
+        return delete(publicationIds);
     }
 
     @Override
@@ -118,15 +135,19 @@ public class PublicationDaoImpl extends AbstractDao<Publication> implements Publ
 
     @Override
     protected boolean update(Publication entity) {
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
-            statement.setString(1, entity.getTitle());
-            statement.setString(2, entity.getContent());
-            statement.setString(3, entity.getMainImage());
-            statement.setLong(4, entity.getPublishingHouse().getId());
-            statement.setLong(5, entity.getId());
-            if (statement.executeUpdate() == 1) {
-                return true;
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+                statement.setString(1, entity.getTitle());
+                statement.setString(2, entity.getContent());
+                statement.setString(3, entity.getMainImage());
+                statement.setLong(4, entity.getPublishingHouse().getId());
+                statement.setLong(5, entity.getId());
+                if (statement.executeUpdate() == 1) {
+                    connection.commit();
+                    return true;
+                }
             }
         } catch (SQLException e) {
             LOGGER.warn("", e);

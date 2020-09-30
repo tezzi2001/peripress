@@ -6,7 +6,7 @@ import java.util.Optional;
 interface Dao<T> {
     public Optional<T> find(long id);
     public List<T> findAll();
-    public boolean save(T entity);
-    public boolean delete(long id);
-    public boolean delete(T entity);
+    public boolean save(T... entities);
+    public boolean delete(long... ids);
+    public boolean delete(T... entities);
 }

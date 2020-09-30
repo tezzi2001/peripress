@@ -67,30 +67,46 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     }
 
     @Override
-    public boolean save(User user) {
-        if (find(user.getId()).isPresent()) {
-            return update(user);
-        }
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SAVE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, user.getUsername());
-            statement.setBytes(2, user.getPassword());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getRole().toString());
-            if (statement.executeUpdate() != 1) {
-                return false;
-            }
-            try (ResultSet resultSet = statement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    user.setId(resultSet.getLong(1));
-                }
-            }
-            for (PublishingHouse publishingHouse : user.getSubscriptions()) {
-                UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
-                userPublishingHouse.setUserId(user.getId());
-                userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
-                USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
-            }
+    public boolean save(User... users) {
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            for (User user : users) {
+                try (PreparedStatement statement = connection.prepareStatement(SAVE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                     if (find(user.getId()).isPresent()) {
+                         if (!update(user)) {
+                             continue;
+                         } else {
+                             connection.rollback();
+                             return false;
+                         }
+                     }
+                     statement.setString(1, user.getUsername());
+                     statement.setBytes(2, user.getPassword());
+                     statement.setString(3, user.getEmail());
+                     statement.setString(4, user.getRole().toString());
+                     if (statement.executeUpdate() != 1) {
+                         connection.rollback();
+                         return false;
+                     }
+                     try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                         if (resultSet.next()) {
+                             user.setId(resultSet.getLong(1));
+                         }
+                     }
+                     for (PublishingHouse publishingHouse : user.getSubscriptions()) {
+                         UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
+                         userPublishingHouse.setUserId(user.getId());
+                         userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
+                         if (!USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse)) {
+                             connection.rollback();
+                             return false;
+                         }
+                     }
+                 }
+                 connection.commit();
+                 return true;
+             }
         } catch (SQLException e) {
             LOGGER.warn("", e);
         }
@@ -98,13 +114,17 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     }
 
     @Override
-    public boolean delete(long id) {
-        return delete(id, DELETE_BY_ID_QUERY);
+    public boolean delete(long... id) {
+        return delete(DELETE_BY_ID_QUERY, id);
     }
 
     @Override
-    public boolean delete(User user) {
-        return delete(user.getId());
+    public boolean delete(User... users) {
+        long[] userIds = new long[users.length];
+        for (int i = 0; i < userIds.length; i++) {
+            userIds[i] = users[i].getId();
+        }
+        return delete(userIds);
     }
 
     @Override
@@ -118,9 +138,15 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     }
 
     @Override
+    public Optional<User> findByUsername(String username) {
+        return Optional.empty();
+    }
+
+    @Override
     protected boolean update(User user) {
         try (Connection connection = DATA_SOURCE.getConnection()) {
             connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
                 statement.setString(1, user.getUsername());
                 statement.setBytes(2, user.getPassword());

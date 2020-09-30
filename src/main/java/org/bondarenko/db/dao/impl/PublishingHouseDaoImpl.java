@@ -17,12 +17,13 @@ import java.util.stream.Collectors;
 public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> implements PublishingHouseDao {
     private static final String FIND_ALL_QUERY = "SELECT * FROM publishing_house_t;";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM publishing_house_t WHERE id = ?;";
-    private static final String SAVE_QUERY = "INSERT INTO publishing_house_t (title, description, main_image, subscripts_count, view_count, subscription_price_usd) VALUES (?, ?, ?, ?, ?, ?);";
+    private static final String SAVE_QUERY = "INSERT INTO publishing_house_t (title, description, main_image, subscripts_count, view_count, subscription_price_usd, publisher) VALUES (?, ?, ?, ?, ?, ?, ?);";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM publishing_house_t WHERE id = ?;";
-    private static final String UPDATE_QUERY = "UPDATE publishing_house_t SET title = ?, description = ?, main_image = ?, subscripts_count = ?, view_count = ?, subscription_price_usd = ? WHERE id = ?;";
+    private static final String UPDATE_QUERY = "UPDATE publishing_house_t SET title = ?, description = ?, main_image = ?, subscripts_count = ?, view_count = ?, subscription_price_usd = ?, publisher = ? WHERE id = ?;";
 
     private static final PublicationDao PUBLICATION_DAO = new PublicationDaoImpl();
     private static final UserPublishingHouseDao USER_PUBLISHING_HOUSE_DAO = new UserPublishingHouseDaoImpl();
+    private static final UserDao USER_DAO = new UserDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(PublishingHouseDaoImpl.class);
 
     @Override
@@ -66,40 +67,53 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
         publishingHouse.setSubscriptsCount(resultSet.getInt("subscripts_count"));
         publishingHouse.setViewCount(resultSet.getInt("view_count"));
         publishingHouse.setSubscriptionPriceUsd(resultSet.getInt("subscription_price_usd"));
+        publishingHouse.setPublisher(USER_DAO.find(resultSet.getLong("publisher")).orElse(null));
         return publishingHouse;
     }
 
     @Override
-    public boolean save(PublishingHouse publishingHouse) {
-        if (find(publishingHouse.getId()).isPresent()) {
-            return update(publishingHouse);
-        }
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SAVE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, publishingHouse.getTitle());
-            statement.setString(2, publishingHouse.getDescription());
-            statement.setString(3, publishingHouse.getMainImage());
-            statement.setInt(4, publishingHouse.getSubscriptsCount());
-            statement.setInt(5, publishingHouse.getViewCount());
-            statement.setInt(6, publishingHouse.getSubscriptionPriceUsd());
-            if (statement.executeUpdate() != 1) {
-                return false;
-            }
-            try (ResultSet resultSet = statement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    publishingHouse.setId(resultSet.getLong(1));
-                }
-            }
-            for (User user : publishingHouse.getSubscribers()) {
-                UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
-                userPublishingHouse.setUserId(user.getId());
-                userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
-                USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
-            }
-            for (Publication publication : publishingHouse.getPublications()) {
-                publication.setPublishingHouse(publishingHouse);
-                PUBLICATION_DAO.save(publication);
-            }
+    public boolean save(PublishingHouse... publishingHouses) {
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            for (PublishingHouse publishingHouse : publishingHouses) {
+                try (PreparedStatement statement = connection.prepareStatement(SAVE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                     if (find(publishingHouse.getId()).isPresent()) {
+                         if (!update(publishingHouse)) {
+                             continue;
+                         } else {
+                             connection.rollback();
+                             return false;
+                         }
+                     }
+                     statement.setString(1, publishingHouse.getTitle());
+                     statement.setString(2, publishingHouse.getDescription());
+                     statement.setString(3, publishingHouse.getMainImage());
+                     statement.setInt(4, publishingHouse.getSubscriptsCount());
+                     statement.setInt(5, publishingHouse.getViewCount());
+                     statement.setInt(6, publishingHouse.getSubscriptionPriceUsd());
+                     statement.setLong(7, publishingHouse.getPublisher().getId());
+                     if (statement.executeUpdate() != 1) {
+                         return false;
+                     }
+                     try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                         if (resultSet.next()) {
+                             publishingHouse.setId(resultSet.getLong(1));
+                         }
+                     }
+                     for (User user : publishingHouse.getSubscribers()) {
+                         UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
+                         userPublishingHouse.setUserId(user.getId());
+                         userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
+                         USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
+                     }
+                     for (Publication publication : publishingHouse.getPublications()) {
+                         publication.setPublishingHouse(publishingHouse);
+                         PUBLICATION_DAO.save(publication);
+                     }
+                 }
+             }
+            connection.commit();
         } catch (SQLException e) {
             LOGGER.warn("", e);
         }
@@ -107,74 +121,78 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
     }
 
     @Override
-    public boolean delete(long id) {
-        final List<Publication> publications = PUBLICATION_DAO.findAllByPublishingHouseId(id);
-        for (Publication publication : publications) {
-            PUBLICATION_DAO.delete(publication);
-        }
-        return delete(id, DELETE_BY_ID_QUERY);
+    public boolean delete(long... ids) {
+        return delete(DELETE_BY_ID_QUERY, ids);
     }
 
     @Override
-    public boolean delete(PublishingHouse publishingHouse) {
-        return delete(publishingHouse.getId());
+    public boolean delete(PublishingHouse... publishingHouses) {
+        long[] publishingHousesIds = new long[publishingHouses.length];
+        for (int i = 0; i < publishingHousesIds.length; i++) {
+            publishingHousesIds[i] = publishingHouses[i].getId();
+        }
+        return delete(publishingHousesIds);
     }
 
     @Override
     protected boolean update(PublishingHouse publishingHouse) {
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
-            statement.setString(1, publishingHouse.getTitle());
-            statement.setString(2, publishingHouse.getDescription());
-            statement.setString(3, publishingHouse.getMainImage());
-            statement.setInt(4, publishingHouse.getSubscriptsCount());
-            statement.setInt(5, publishingHouse.getViewCount());
-            statement.setInt(6, publishingHouse.getSubscriptionPriceUsd());
-            statement.setLong(7, publishingHouse.getId());
-            if (statement.executeUpdate() == 1) {
-                List<Long> dbUserIds = USER_PUBLISHING_HOUSE_DAO.findAllByPublishingHouseId(publishingHouse.getId())
-                        .stream().map(UserPublishingHouse::getUserId).collect(Collectors.toList());
-                List<Long> actualUserIds = publishingHouse.getSubscribers()
-                        .stream().map(User::getId).collect(Collectors.toList());
-                for (Long dbUserId : dbUserIds) {
-                    for (Long actualUserId : actualUserIds) {
-                        if (dbUserId.equals(actualUserId)) {
-                            dbUserIds.remove(dbUserId);
-                            actualUserIds.remove(actualUserId);
-                            break;
-                        }
-                    }
-                }
-                for (Long dbUserId : dbUserIds) {
-                    USER_PUBLISHING_HOUSE_DAO.deleteByUserId(dbUserId);
-                }
-                for (Long actualUserId : actualUserIds) {
-                    UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
-                    userPublishingHouse.setUserId(actualUserId);
-                    userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
-                    USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
-                }
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+             try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+                 statement.setString(1, publishingHouse.getTitle());
+                 statement.setString(2, publishingHouse.getDescription());
+                 statement.setString(3, publishingHouse.getMainImage());
+                 statement.setInt(4, publishingHouse.getSubscriptsCount());
+                 statement.setInt(5, publishingHouse.getViewCount());
+                 statement.setInt(6, publishingHouse.getSubscriptionPriceUsd());
+                 statement.setLong(7, publishingHouse.getPublisher().getId());
+                 statement.setLong(8, publishingHouse.getId());
+                 if (statement.executeUpdate() == 1) {
+                     List<Long> dbUserIds = USER_PUBLISHING_HOUSE_DAO.findAllByPublishingHouseId(publishingHouse.getId())
+                             .stream().map(UserPublishingHouse::getUserId).collect(Collectors.toList());
+                     List<Long> actualUserIds = publishingHouse.getSubscribers()
+                             .stream().map(User::getId).collect(Collectors.toList());
+                     for (Long dbUserId : dbUserIds) {
+                         for (Long actualUserId : actualUserIds) {
+                             if (dbUserId.equals(actualUserId)) {
+                                 dbUserIds.remove(dbUserId);
+                                 actualUserIds.remove(actualUserId);
+                                 break;
+                             }
+                         }
+                     }
+                     for (Long dbUserId : dbUserIds) {
+                         USER_PUBLISHING_HOUSE_DAO.deleteByUserId(dbUserId);
+                     }
+                     for (Long actualUserId : actualUserIds) {
+                         UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
+                         userPublishingHouse.setUserId(actualUserId);
+                         userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
+                         USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
+                     }
 
-                List<Publication> dbPublications = PUBLICATION_DAO.findAllByPublishingHouseId(publishingHouse.getId());
-                List<Publication> actualPublications = publishingHouse.getPublications();
-                for (Publication dbPublication : dbPublications) {
-                    for (Publication actualPublication : actualPublications) {
-                        if (dbPublication.getId() == actualPublication.getId()) {
-                            dbPublications.remove(dbPublication);
-                            actualPublications.remove(actualPublication);
-                            break;
-                        }
-                    }
-                }
-                for (Publication dbPublication : dbPublications) {
-                    PUBLICATION_DAO.delete(dbPublication);
-                }
-                for (Publication actualPublication : actualPublications) {
-                    actualPublication.setPublishingHouse(publishingHouse);
-                    PUBLICATION_DAO.save(actualPublication);
-                }
-                return true;
-            }
+                     List<Publication> dbPublications = PUBLICATION_DAO.findAllByPublishingHouseId(publishingHouse.getId());
+                     List<Publication> actualPublications = publishingHouse.getPublications();
+                     for (Publication dbPublication : dbPublications) {
+                         for (Publication actualPublication : actualPublications) {
+                             if (dbPublication.getId() == actualPublication.getId()) {
+                                 dbPublications.remove(dbPublication);
+                                 actualPublications.remove(actualPublication);
+                                 break;
+                             }
+                         }
+                     }
+                     for (Publication dbPublication : dbPublications) {
+                         PUBLICATION_DAO.delete(dbPublication);
+                     }
+                     for (Publication actualPublication : actualPublications) {
+                         actualPublication.setPublishingHouse(publishingHouse);
+                         PUBLICATION_DAO.save(actualPublication);
+                     }
+                     return true;
+                 }
+             }
         } catch (SQLException e) {
             LOGGER.warn("", e);
         }

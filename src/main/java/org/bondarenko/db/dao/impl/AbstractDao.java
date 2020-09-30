@@ -13,13 +13,20 @@ abstract class AbstractDao<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDao.class);
 
 
-    protected boolean delete(long id, String query) {
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, id);
-            if (statement.executeUpdate() == 1) {
-                return true;
+    protected boolean delete(String query, long... ids) {
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            for (long id : ids) {
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    statement.setLong(1, id);
+                    if (statement.executeUpdate() != 1) {
+                        connection.rollback();
+                        return false;
+                    }
+                }
             }
+            connection.commit();
         } catch (SQLException e) {
             LOGGER.trace("", e);
         }

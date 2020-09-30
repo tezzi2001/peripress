@@ -50,14 +50,22 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
     }
 
     @Override
-    public boolean save(UserPublishingHouse userPublishingHouse) {
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SAVE_QUERY)) {
-            statement.setLong(1, userPublishingHouse.getUserId());
-            statement.setLong(2, userPublishingHouse.getPublishingHouseId());
-            if (statement.executeUpdate() == 1) {
-                return true;
+    public boolean save(UserPublishingHouse... userPublishingHouses) {
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
+                try (PreparedStatement statement = connection.prepareStatement(SAVE_QUERY)) {
+                    statement.setLong(1, userPublishingHouse.getUserId());
+                    statement.setLong(2, userPublishingHouse.getPublishingHouseId());
+                    if (statement.executeUpdate() != 1) {
+                        connection.rollback();
+                        return false;
+                    }
+                }
             }
+            connection.commit();
+            return true;
         } catch (SQLException e) {
             LOGGER.warn("", e);
         }
@@ -65,19 +73,25 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
     }
 
     @Override
-    public boolean delete(long publishingHouseId) {
-        return delete(publishingHouseId, DELETE_BY_PUBLISHING_HOUSE_ID_QUERY);
+    public boolean delete(long... publishingHouseIds) {
+        return delete(DELETE_BY_PUBLISHING_HOUSE_ID_QUERY, publishingHouseIds);
     }
 
     @Override
-    public boolean delete(UserPublishingHouse userPublishingHouse) {
-        try (Connection connection = DATA_SOURCE.getConnection();
-             PreparedStatement statement = connection.prepareStatement(DELETE_BY_PUBLISHING_HOUSE_ID_AND_USER_ID_QUERY)) {
-            statement.setLong(1, userPublishingHouse.getPublishingHouseId());
-            statement.setLong(2, userPublishingHouse.getUserId());
-            if (statement.executeUpdate() == 1) {
-                return true;
+    public boolean delete(UserPublishingHouse... userPublishingHouses) {
+        try (Connection connection = DATA_SOURCE.getConnection()) {
+            for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
+                try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_PUBLISHING_HOUSE_ID_AND_USER_ID_QUERY)) {
+                    statement.setLong(1, userPublishingHouse.getPublishingHouseId());
+                    statement.setLong(2, userPublishingHouse.getUserId());
+                    if (statement.executeUpdate() != 1) {
+                        connection.rollback();
+                        return false;
+                    }
+                }
             }
+            connection.commit();
+            return true;
         } catch (SQLException e) {
             LOGGER.trace("", e);
         }
@@ -96,7 +110,7 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
 
     @Override
     public boolean deleteByUserId(long userId) {
-        return delete(userId, DELETE_BY_USER_ID_QUERY);
+        return delete(DELETE_BY_USER_ID_QUERY, userId);
     }
 
     private List<UserPublishingHouse> find(long id, String query) {
