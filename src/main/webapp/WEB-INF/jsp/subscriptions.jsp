@@ -1,7 +1,13 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.bondarenko.db.entity.PublishingHouse" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.bondarenko.constant.Jsp" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="language" value="${not empty param.language ? param.language : not empty language ? language : pageContext.request.locale}" scope="session" />
+<fmt:setLocale value="${language}" />
+<fmt:setBundle basename="content"/>
+
 <!DOCTYPE html>
 <html lang="" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 
@@ -80,10 +86,28 @@
                         </div>
                     </div>
                     <% } else { %>
-                    <div class="hide">
-                        <i class="material-icons green-text">money_off</i>
+                    <div class="row" style="margin-bottom: 0">
+                        <div class="col s1">
+                            <i class="material-icons green-text">money_off</i>
+                        </div>
                     </div>
                     <% } %>
+                    <div class="row" style="margin-bottom: 0">
+                        <div class="col s1">
+                            <strong class="indigo-text"><fmt:message key="type" /></strong>
+                        </div>
+                        <div class="col s1 offset-s1 offset-m3 offset-m4">
+                            <strong class="blue-text"><%= publishingHouse.getType() %></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 0">
+                        <div class="col s1">
+                            <strong class="indigo-text"><fmt:message key="theme" /></strong>
+                        </div>
+                        <div class="col s1 offset-s1 offset-m3 offset-m4">
+                            <strong class="blue-text"><%= publishingHouse.getTheme() %></strong>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -191,10 +191,28 @@
                         </div>
                     </div>
                     <% } else { %>
-                    <div class="hide">
-                        <i class="material-icons green-text">money_off</i>
+                    <div class="row" style="margin-bottom: 0">
+                        <div class="col s1">
+                            <i class="material-icons green-text">money_off</i>
+                        </div>
                     </div>
                     <% } %>
+                    <div class="row" style="margin-bottom: 0">
+                        <div class="col s1">
+                            <strong class="indigo-text"><fmt:message key="type" /></strong>
+                        </div>
+                        <div class="col s1 offset-s1 offset-m3 offset-m4">
+                            <strong class="blue-text"><%= publishingHouse.getType() %></strong>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 0">
+                        <div class="col s1">
+                            <strong class="indigo-text"><fmt:message key="theme" /></strong>
+                        </div>
+                        <div class="col s1 offset-s1 offset-m3 offset-m4">
+                            <strong class="blue-text"><%= publishingHouse.getTheme() %></strong>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -233,7 +251,7 @@
     <c:set var="pageRequest" value="${pageContext.request.contextPath}${paginationPath}${paginationQuery}${Jsp.PAGE_PARAM}" scope="request"/>
     <ul class="pagination">
         <c:if test = "${pageNumber == 1}">
-            <li class="disabled"><a href="#"><i class="material-icons">chevron_left</i></a></li>
+            <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
             <li class="active indigo"><a href="${pageRequest}=1">1</a></li>
             <li class="waves-effect"><a href="${pageRequest}=2">2</a></li>
             <li class="waves-effect"><a href="${pageRequest}=3">3</a></li>
