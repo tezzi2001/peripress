@@ -101,11 +101,11 @@
     <build>
         <testOutputDirectory>${basedir}/target/classes</testOutputDirectory>
         <filters>
-            <filter>src/main/webapp/resources/log4j.xml</filter>
+            <filter>src/main/resources/log4j.xml</filter>
         </filters>
         <resources>
             <resource>
-                <directory>src/main/webapp/resources</directory>
+                <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
