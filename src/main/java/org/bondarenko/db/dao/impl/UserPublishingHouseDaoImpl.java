@@ -50,18 +50,16 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
     }
 
     @Override
-    public boolean save(UserPublishingHouse... userPublishingHouses) {
+    public boolean save(UserPublishingHouse userPublishingHouse) {
         try (Connection connection = DATA_SOURCE.getConnection()) {
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
-                try (PreparedStatement statement = connection.prepareStatement(SAVE_QUERY)) {
-                    statement.setLong(1, userPublishingHouse.getUserId());
-                    statement.setLong(2, userPublishingHouse.getPublishingHouseId());
-                    if (statement.executeUpdate() != 1) {
-                        connection.rollback();
-                        return false;
-                    }
+            try (PreparedStatement statement = connection.prepareStatement(SAVE_QUERY)) {
+                statement.setLong(1, userPublishingHouse.getUserId());
+                statement.setLong(2, userPublishingHouse.getPublishingHouseId());
+                if (statement.executeUpdate() != 1) {
+                    connection.rollback();
+                    return false;
                 }
             }
             connection.commit();
@@ -73,21 +71,21 @@ public class UserPublishingHouseDaoImpl extends AbstractDao<UserPublishingHouseD
     }
 
     @Override
-    public boolean delete(long... publishingHouseIds) {
-        return delete(DELETE_BY_PUBLISHING_HOUSE_ID_QUERY, publishingHouseIds);
+    public boolean delete(long publishingHouseId) {
+        return delete(DELETE_BY_PUBLISHING_HOUSE_ID_QUERY, publishingHouseId);
     }
 
     @Override
-    public boolean delete(UserPublishingHouse... userPublishingHouses) {
+    public boolean delete(UserPublishingHouse userPublishingHouse) {
         try (Connection connection = DATA_SOURCE.getConnection()) {
-            for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
-                try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_PUBLISHING_HOUSE_ID_AND_USER_ID_QUERY)) {
-                    statement.setLong(1, userPublishingHouse.getPublishingHouseId());
-                    statement.setLong(2, userPublishingHouse.getUserId());
-                    if (statement.executeUpdate() != 1) {
-                        connection.rollback();
-                        return false;
-                    }
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_PUBLISHING_HOUSE_ID_AND_USER_ID_QUERY)) {
+                statement.setLong(1, userPublishingHouse.getPublishingHouseId());
+                statement.setLong(2, userPublishingHouse.getUserId());
+                if (statement.executeUpdate() != 1) {
+                    connection.rollback();
+                    return false;
                 }
             }
             connection.commit();

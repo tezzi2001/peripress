@@ -1,6 +1,6 @@
 package org.bondarenko.db.entity;
 
-import org.bondarenko.core.filter.Role;
+import org.bondarenko.constant.Role;
 import org.bondarenko.db.dao.impl.PublishingHouseDaoImpl;
 import org.bondarenko.db.dao.impl.UserPublishingHouseDaoImpl;
 
@@ -10,9 +10,10 @@ import java.util.List;
 public class User {
     private long id;
     private String username;
-    private byte[] password;
+    private String password;
     private String email;
     private Role role;
+    private int balance;
     private List<PublishingHouse> subscriptions;
 
     public long getId() {
@@ -31,11 +32,11 @@ public class User {
         this.username = username;
     }
 
-    public byte[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(byte[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -55,6 +56,10 @@ public class User {
         this.role = role;
     }
 
+    public void setSubscriptions(List<PublishingHouse> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
+
     public List<PublishingHouse> getSubscriptions() {
         if (subscriptions == null) {
             subscriptions = new ArrayList<>();
@@ -66,7 +71,11 @@ public class User {
         return subscriptions;
     }
 
-    public void setSubscriptions(List<PublishingHouse> subscriptions) {
-        this.subscriptions = subscriptions;
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
     }
 }

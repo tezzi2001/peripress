@@ -7,43 +7,24 @@ CREATE TABLE user_t
 (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
     username VARCHAR(15) NOT NULL UNIQUE,
-    password BYTEA NOT NULL,
+    password VARCHAR(15) NOT NULL,
     email VARCHAR NOT NULL UNIQUE,
     role VARCHAR NOT NULL,
+    balance INT DEFAULT 0 NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE publishing_house_t
 (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
-    title VARCHAR NOT NULL,
+    name VARCHAR NOT NULL UNIQUE,
     description VARCHAR NOT NULL,
     main_image VARCHAR,
-    subscripts_count INT DEFAULT 0 NOT NULL,
-    view_count INT DEFAULT 0 NOT NULL ,
     subscription_price_usd INT DEFAULT 0 NOT NULL,
-    publisher BIGINT NOT NULL,
-    CONSTRAINT fk_publisher
-        FOREIGN KEY (publisher)
-            REFERENCES user_t (id)
-                ON DELETE CASCADE,
+    theme VARCHAR NOT NULL,
+    type_field VARCHAR NOT NULL,
     PRIMARY KEY (id)
 );
-
-CREATE TABLE publication_t
-(
-    id BIGINT GENERATED ALWAYS AS IDENTITY,
-    title VARCHAR NOT NULL,
-    content VARCHAR NOT NULL,
-    main_image VARCHAR,
-    publishing_house_id BIGINT NOT NULL,
-    PRIMARY KEY (id),
-    CONSTRAINT fk_publishing_house
-        FOREIGN KEY (publishing_house_id)
-            REFERENCES publishing_house_t (id)
-                ON DELETE CASCADE
-);
-
 
 CREATE TABLE user_publishing_house_t
 (

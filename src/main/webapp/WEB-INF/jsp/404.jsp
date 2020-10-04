@@ -1,7 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.bondarenko.constant.Paths" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="language" value="${not empty param.language ? param.language : not empty language ? language : pageContext.request.locale}" scope="session" />
+<fmt:setLocale value="${language}" />
+<fmt:setBundle basename="content" />
 
 <!DOCTYPE html>
-<html lang="" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="${language}" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <title>Peripress | Not found</title>
@@ -66,7 +72,7 @@
     <div class="err">4</div>
     <i class="far fa-question-circle fa-spin"></i>
     <div class="err2">4</div>
-    <div class="msg">Maybe this page moved? Got deleted? Is hiding out in quarantine? Never existed in the first place?<p>Let's go <a href="${pageContext.request.contextPath}/">home</a> and try from there.</p></div>
+    <div class="msg"><fmt:message key="notFoundMessage1" /> <p><a href="${pageContext.request.contextPath}${Paths.HOME}"><fmt:message key="goHome" /></a><fmt:message key="notFoundMessage2" /></p></div>
 </div>
 </body>
 </html>
