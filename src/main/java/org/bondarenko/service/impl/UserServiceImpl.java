@@ -33,11 +33,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<PublishingHouse> getAllPublishingHouses(FilteringOptions filteringOptions, SortingOptions sortingOptions) {
+    public List<PublishingHouse> getAllPublishingHouses(FilteringOptions filteringOptions, SortingOptions sortingOptions, int page) {
         List<PublishingHouse> publishingHouses = publishingHouseDao.findAll();
         publishingHouses = sort(sortingOptions, publishingHouses);
         publishingHouses = filter(filteringOptions, publishingHouses);
-        return publishingHouses;
+        int offset = (page - 1) * NUMBER_OF_PUBLISHING_HOUSES_ON_PAGE;
+        int toIndex = offset + NUMBER_OF_PUBLISHING_HOUSES_ON_PAGE;
+        if (offset > publishingHouses.size()) {
+            return new ArrayList<>();
+        }
+        if (toIndex > publishingHouses.size()) {
+            toIndex = publishingHouses.size();
+        }
+        return publishingHouses.subList(offset, toIndex);
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface UserService {
     List<PublishingHouse> getPublishingHouses(int page);
-    List<PublishingHouse> getAllPublishingHouses(FilteringOptions filteringOptions, SortingOptions sortingOptions);
+    List<PublishingHouse> getAllPublishingHouses(FilteringOptions filteringOptions, SortingOptions sortingOptions, int page);
     Optional<PublishingHouse> getByName(String name);
     void subscribe(HttpSession session, long id);
     void deposit(HttpSession session, int amount);

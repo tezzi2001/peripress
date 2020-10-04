@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.bondarenko.constant.Jsp.*;
 import static org.bondarenko.constant.Pages.PUBLICATION_HOUSES;
+import static org.bondarenko.constant.Paths.FILTER_AND_SORT;
 
 public class FilterAndSortCommand implements Command {
     private final UserService userService = new UserServiceImpl();
@@ -53,8 +54,19 @@ public class FilterAndSortCommand implements Command {
                 SortingOption.valueOf(option.orElse(SortingOption.NO_OPTION.toString()))
         );
 
-        List<PublishingHouse> publishingHouses = userService.getAllPublishingHouses(filteringOptions, sortingOptions);
+        String pageAsString = request.getParameter(PAGE_PARAM);
+        int page;
+        try {
+            page = Integer.parseInt(pageAsString);
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        List<PublishingHouse> publishingHouses = userService.getAllPublishingHouses(filteringOptions, sortingOptions, page);
         request.setAttribute(PUBLICATION_HOUSES_LIST, publishingHouses);
+        request.setAttribute(PAGE_PARAM, page);
+        request.setAttribute(PAGINATION_PATH, request.getRequestURI());
+        request.setAttribute(PAGINATION_QUERY, request.getQueryString());
         request.getRequestDispatcher(PUBLICATION_HOUSES).forward(request, response);
     }
 }

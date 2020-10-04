@@ -27,6 +27,8 @@ public final class Jsp {
     public static final String PUBLISHING_HOUSE_PRICE = "PUBLISHING_HOUSE_PRICE";
     public static final String PUBLISHING_HOUSE_ID = "PUBLISHING_HOUSE_ID";
     public static final String PAGE_PARAM = "PAGE_PARAM";
+    public static final String PAGINATION_PATH = "PAGINATION_PATH";
+    public static final String PAGINATION_QUERY = "PAGINATION_QUERY";
 
     private Jsp() {
     }

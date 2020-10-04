@@ -7,6 +7,7 @@
 <%@ page import="org.bondarenko.core.sorting.SortingType" %>
 <%@ page import="org.bondarenko.constant.Paths" %>
 <%@ page import="org.bondarenko.constant.Jsp" %>
+<%@ page import="java.util.function.Supplier" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="language" value="${not empty param.language ? param.language : not empty language ? language : pageContext.request.locale}" scope="session" />
@@ -202,12 +203,35 @@
 </section>
 
 <section class="section container center">
-    <c:set var="pageRequest" value="${pageContext.request.contextPath}${Paths.HOME}?${Jsp.PAGE_PARAM}" scope="request"/>
-    <c:set var="pageNumber" value="<%= request.getAttribute(Jsp.PAGE_PARAM) == null ? 1 : Integer.parseInt(String.valueOf(request.getAttribute(Jsp.PAGE_PARAM)))%>" scope="request"/>
-    <c:set var="previousPageNumber" value="${pageNumber-1}" scope="request"/>
-    <c:set var="backPageRequest" value="${pageContext.request.contextPath}${Paths.HOME}?${Jsp.PAGE_PARAM}=${pageNumber-1}" scope="request"/>
+    <%
+        Object pageNumberObj = request.getAttribute(Jsp.PAGE_PARAM);
+        int pageNumber = pageNumberObj == null ? 1 : Integer.parseInt(String.valueOf(pageNumberObj));
+
+        Object paginationPathObj = request.getAttribute(Jsp.PAGINATION_PATH);
+        String paginationPath = paginationPathObj == null ? Paths.HOME : String.valueOf(paginationPathObj);
+
+        Object paginationQueryObj = request.getAttribute(Jsp.PAGINATION_QUERY);
+        Supplier<String> query = () -> {
+            String string = String.valueOf(paginationQueryObj);
+            if (string.contains(Jsp.PAGE_PARAM)) {
+                string = string
+                        .substring(0, string.length()-2)
+                        .replace(Jsp.PAGE_PARAM, "");
+                string = string.substring(0, string.length()-1);
+            }
+            if (string.isEmpty()) {
+                return "?";
+            } else {
+                return '?'+string+'&';
+            }
+        };
+        String paginationQuery = paginationQueryObj == null ? "?" : query.get();
+    %>
+    <c:set var="pageNumber" value="<%= pageNumber %>" scope="request" />
+    <c:set var="paginationPath" value="<%= paginationPath %>" scope="request" />
+    <c:set var="paginationQuery" value="<%= paginationQuery %>" scope="request" />
+    <c:set var="pageRequest" value="${pageContext.request.contextPath}${paginationPath}${paginationQuery}${Jsp.PAGE_PARAM}" scope="request"/>
     <ul class="pagination">
-<%--        <li class="${pageNumber == 1 ? "disabled" : "waves-effect"}"><a href="${pageNumber == 1 ? '#' : pageContext.request.contextPath += Paths.HOME += '?' += Jsp.PAGE_PARAM += '=' += previousPageNumber}"><i class="material-icons">chevron_left</i></a></li>--%>
         <c:if test = "${pageNumber == 1}">
             <li class="disabled"><a href="#"><i class="material-icons">chevron_left</i></a></li>
             <li class="active indigo"><a href="${pageRequest}=1">1</a></li>
