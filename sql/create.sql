@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS user_publishing_house_t;
-DROP TABLE IF EXISTS publication_t;
 DROP TABLE IF EXISTS publishing_house_t;
 DROP TABLE IF EXISTS user_t;
 
@@ -7,7 +6,7 @@ CREATE TABLE user_t
 (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
     username VARCHAR(15) NOT NULL UNIQUE,
-    password VARCHAR(15) NOT NULL,
+    password VARCHAR NOT NULL,
     email VARCHAR NOT NULL UNIQUE,
     role VARCHAR NOT NULL,
     balance INT DEFAULT 0 NOT NULL,

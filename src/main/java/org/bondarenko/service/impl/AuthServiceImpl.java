@@ -5,6 +5,7 @@ import org.bondarenko.db.dao.UserDao;
 import org.bondarenko.db.dao.impl.UserDaoImpl;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.service.AuthService;
+import org.bondarenko.service.EncryptorService;
 
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
@@ -14,9 +15,11 @@ import static org.bondarenko.constant.Session.USER_ID;
 
 public class AuthServiceImpl implements AuthService {
     private final UserDao userDao;
+    private final EncryptorService encryptorService;
 
     public AuthServiceImpl() {
         this.userDao = new UserDaoImpl();
+        this.encryptorService = new EncryptorServiceImpl();
     }
 
     @Override
@@ -26,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
         User user = userOptional.get();
-        if (!rawPassword.equals(user.getPassword())) {
+        if (!encryptorService.matches(rawPassword, user.getPassword())) {
             return false;
         }
         if (Role.BANNED.equals(user.getRole())) {
@@ -40,8 +43,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean register(String username, String email, String rawPassword, String confirmPassword, Role role) {
         User user = new User();
+        String encryptedPassword = encryptorService.encode(rawPassword);
         user.setUsername(username);
-        user.setPassword(rawPassword);
+        user.setPassword(encryptedPassword);
         user.setEmail(email);
         user.setRole(role);
         return userDao.save(user);
