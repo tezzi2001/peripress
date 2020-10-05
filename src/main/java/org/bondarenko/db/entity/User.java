@@ -1,8 +1,9 @@
 package org.bondarenko.db.entity;
 
 import org.bondarenko.constant.Role;
-import org.bondarenko.db.dao.impl.PublishingHouseDaoImpl;
+import org.bondarenko.db.dao.PublishingHouseDao;
 import org.bondarenko.db.dao.impl.UserPublishingHouseDaoImpl;
+import org.bondarenko.db.dao.provider.DaoProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +64,10 @@ public class User {
     public List<PublishingHouse> getSubscriptions() {
         if (subscriptions == null) {
             subscriptions = new ArrayList<>();
+            PublishingHouseDao publishingHouseDao = DaoProvider.getInstance().getPublishingHouseDao();
             List<UserPublishingHouse> userPublishingHouses = new UserPublishingHouseDaoImpl().findAllByUserId(id);
             for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
-                subscriptions.add(new PublishingHouseDaoImpl().find(userPublishingHouse.getPublishingHouseId()).orElse(null));
+                subscriptions.add(publishingHouseDao.find(userPublishingHouse.getPublishingHouseId()).orElse(null));
             }
         }
         return subscriptions;

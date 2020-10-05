@@ -17,18 +17,18 @@ import static org.bondarenko.constant.Pages.SIGN_IN;
 import static org.bondarenko.constant.Pages.SIGN_UP;
 import static org.bondarenko.constant.Paths.*;
 
-public final class GetCommandProvider implements CommandProvider {
+public class GetCommandProvider implements CommandProvider {
     private final Map<String, Command> commandMap = new HashMap<>();
 
     public GetCommandProvider() {
-        commandMap.put(HOME, new HomeCommand());
-        commandMap.put(LOGOUT, new LogoutCommand());
+        commandMap.put(HOME, new HomeCommand(SERVICE_PROVIDER.getUserService()));
+        commandMap.put(LOGOUT, new LogoutCommand(SERVICE_PROVIDER.getAuthService()));
         commandMap.put(LOGIN, (req, res) -> forward(req, res, SIGN_IN));
         commandMap.put(REGISTER, (req, res) -> forward(req, res, SIGN_UP));
-        commandMap.put(Paths.SUBSCRIPTIONS, new SubscriptionsCommand());
-        commandMap.put(Paths.SETTINGS, new SettingsCommand());
-        commandMap.put(SUBSCRIBE, new SubscribeCommand());
-        commandMap.put(FILTER_AND_SORT, new FilterAndSortCommand());
+        commandMap.put(Paths.SUBSCRIPTIONS, new SubscriptionsCommand(SERVICE_PROVIDER.getUserService()));
+        commandMap.put(Paths.SETTINGS, new SettingsCommand(SERVICE_PROVIDER.getUserService()));
+        commandMap.put(SUBSCRIBE, new SubscribeCommand(SERVICE_PROVIDER.getUserService()));
+        commandMap.put(FILTER_AND_SORT, new FilterAndSortCommand(SERVICE_PROVIDER.getUserService()));
 
         commandMap.put(Paths.BAN, (req, res) -> forward(req, res, Pages.BAN));
         commandMap.put(Paths.EDIT_PUBLICATION_HOUSE, (req, res) -> forward(req, res, Pages.EDIT_PUBLICATION_HOUSE));

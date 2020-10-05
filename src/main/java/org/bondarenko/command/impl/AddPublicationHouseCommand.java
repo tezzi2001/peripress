@@ -5,7 +5,6 @@ import org.bondarenko.core.filtering.Theme;
 import org.bondarenko.core.filtering.Type;
 import org.bondarenko.db.entity.PublishingHouse;
 import org.bondarenko.service.AdminService;
-import org.bondarenko.service.impl.AdminServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,11 @@ import static org.bondarenko.constant.Jsp.*;
 import static org.bondarenko.constant.Paths.HOME;
 
 public class AddPublicationHouseCommand implements Command {
-    private final AdminService adminService = new AdminServiceImpl();
+    private final AdminService adminService;
+
+    public AddPublicationHouseCommand(AdminService adminService) {
+        this.adminService = adminService;
+    }
 
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PublishingHouse publishingHouse = new PublishingHouse();

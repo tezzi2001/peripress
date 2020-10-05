@@ -2,8 +2,9 @@ package org.bondarenko.db.entity;
 
 import org.bondarenko.core.filtering.Theme;
 import org.bondarenko.core.filtering.Type;
-import org.bondarenko.db.dao.impl.UserDaoImpl;
+import org.bondarenko.db.dao.UserDao;
 import org.bondarenko.db.dao.impl.UserPublishingHouseDaoImpl;
+import org.bondarenko.db.dao.provider.DaoProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,9 +82,10 @@ public class PublishingHouse {
     public List<User> getSubscribers() {
         if (subscribers == null) {
             subscribers = new ArrayList<>();
+            UserDao userDao = DaoProvider.getInstance().getUserDao();
             List<UserPublishingHouse> userPublishingHouses = new UserPublishingHouseDaoImpl().findAllByPublishingHouseId(id);
             for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
-                subscribers.add(new UserDaoImpl().find(userPublishingHouse.getUserId()).orElse(null));
+                subscribers.add(userDao.find(userPublishingHouse.getUserId()).orElse(null));
             }
             setSubscribers(subscribers);
         }

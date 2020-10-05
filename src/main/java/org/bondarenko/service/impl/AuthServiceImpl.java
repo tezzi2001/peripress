@@ -2,7 +2,6 @@ package org.bondarenko.service.impl;
 
 import org.bondarenko.constant.Role;
 import org.bondarenko.db.dao.UserDao;
-import org.bondarenko.db.dao.impl.UserDaoImpl;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.service.AuthService;
 import org.bondarenko.service.EncryptorService;
@@ -17,9 +16,9 @@ public class AuthServiceImpl implements AuthService {
     private final UserDao userDao;
     private final EncryptorService encryptorService;
 
-    public AuthServiceImpl() {
-        this.userDao = new UserDaoImpl();
-        this.encryptorService = new EncryptorServiceImpl();
+    public AuthServiceImpl(UserDao userDao, EncryptorService encryptorService) {
+        this.userDao = userDao;
+        this.encryptorService = encryptorService;
     }
 
     @Override

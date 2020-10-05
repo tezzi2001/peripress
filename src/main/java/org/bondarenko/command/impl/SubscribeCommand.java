@@ -2,7 +2,6 @@ package org.bondarenko.command.impl;
 
 import org.bondarenko.command.Command;
 import org.bondarenko.service.UserService;
-import org.bondarenko.service.impl.UserServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +12,11 @@ import static org.bondarenko.constant.Paths.HOME;
 import static org.bondarenko.constant.Paths.SUBSCRIPTIONS;
 
 public class SubscribeCommand implements Command {
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService;
+
+    public SubscribeCommand(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {

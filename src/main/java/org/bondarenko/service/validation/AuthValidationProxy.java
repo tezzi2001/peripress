@@ -2,19 +2,22 @@ package org.bondarenko.service.validation;
 
 import org.bondarenko.constant.Role;
 import org.bondarenko.service.AuthService;
-import org.bondarenko.service.impl.AuthServiceImpl;
 
 import javax.servlet.http.HttpSession;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AuthValidationProxy implements AuthService {
-    private final AuthService authService = new AuthServiceImpl();
+    private final AuthService authService;
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
     // can contain uppercase and lowercase letters and numbers, symbols ._(but not at the end or begin) (5-15 chars)
     private static final String USERNAME_REGEX = "^[a-zA-Z0-9]([._](?![._])|[a-zA-Z0-9]){3,13}[a-zA-Z0-9]$";
     // must contain at least one uppercase, lowercase letter and number; symbols are not allowed (5-15 chars)
     private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{5,15}$";
+
+    public AuthValidationProxy(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public boolean login(String username, String rawPassword, HttpSession session) {

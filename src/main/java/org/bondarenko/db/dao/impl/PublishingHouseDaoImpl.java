@@ -22,9 +22,14 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
     private static final String SAVE_QUERY = "INSERT INTO publishing_house_t (name, description, main_image, subscription_price_usd, theme, type_field) VALUES (?, ?, ?, ?, ?, ?);";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM publishing_house_t WHERE id = ?;";
     private static final String UPDATE_QUERY = "UPDATE publishing_house_t SET name = ?, description = ?, main_image = ?, subscription_price_usd = ?, theme = ?, type_field = ? WHERE id = ?;";
-
-    private static final UserPublishingHouseDao USER_PUBLISHING_HOUSE_DAO = new UserPublishingHouseDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(PublishingHouseDaoImpl.class);
+
+    private final UserPublishingHouseDao userPublishingHouseDao;
+
+    public PublishingHouseDaoImpl(UserPublishingHouseDao userPublishingHouseDao) {
+        this.userPublishingHouseDao = userPublishingHouseDao;
+    }
+
 
     @Override
     public Optional<PublishingHouse> find(long id) {
@@ -97,7 +102,7 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
                     UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
                     userPublishingHouse.setUserId(user.getId());
                     userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
-                    USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
+                    userPublishingHouseDao.save(userPublishingHouse);
                 }
             }
             connection.commit();
@@ -131,7 +136,7 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
                  statement.setString(6, publishingHouse.getType().toString());
                  statement.setLong(7, publishingHouse.getId());
                  if (statement.executeUpdate() == 1) {
-                     List<Long> dbUserIds = USER_PUBLISHING_HOUSE_DAO.findAllByPublishingHouseId(publishingHouse.getId())
+                     List<Long> dbUserIds = userPublishingHouseDao.findAllByPublishingHouseId(publishingHouse.getId())
                              .stream().map(UserPublishingHouse::getUserId).collect(Collectors.toList());
                      List<Long> actualUserIds = publishingHouse.getSubscribers()
                              .stream().map(User::getId).collect(Collectors.toList());
@@ -159,13 +164,13 @@ public class PublishingHouseDaoImpl extends AbstractDao<PublishingHouse> impleme
                          }
                      }
                      for (Long dbUserId : dbUserIds) {
-                         USER_PUBLISHING_HOUSE_DAO.deleteByUserId(dbUserId);
+                         userPublishingHouseDao.deleteByUserId(dbUserId);
                      }
                      for (Long actualUserId : actualUserIds) {
                          UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
                          userPublishingHouse.setUserId(actualUserId);
                          userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
-                         USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
+                         userPublishingHouseDao.save(userPublishingHouse);
                      }
                      return true;
                  }

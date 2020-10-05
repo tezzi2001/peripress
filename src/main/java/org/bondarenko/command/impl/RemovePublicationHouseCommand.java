@@ -2,7 +2,6 @@ package org.bondarenko.command.impl;
 
 import org.bondarenko.command.Command;
 import org.bondarenko.service.AdminService;
-import org.bondarenko.service.impl.AdminServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,11 @@ import static org.bondarenko.constant.Jsp.DELETE_ID;
 import static org.bondarenko.constant.Paths.HOME;
 
 public class RemovePublicationHouseCommand implements Command {
-    private final AdminService adminService = new AdminServiceImpl();
+    private final AdminService adminService;
+
+    public RemovePublicationHouseCommand(AdminService adminService) {
+        this.adminService = adminService;
+    }
 
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {

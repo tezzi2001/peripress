@@ -2,7 +2,6 @@ package org.bondarenko.command.impl;
 
 import org.bondarenko.command.Command;
 import org.bondarenko.service.UserService;
-import org.bondarenko.service.impl.UserServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +14,11 @@ import static org.bondarenko.constant.Paths.DEPOSIT;
 import static org.bondarenko.constant.Paths.HOME;
 
 public class DepositCommand implements Command {
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService;
+
+    public DepositCommand(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

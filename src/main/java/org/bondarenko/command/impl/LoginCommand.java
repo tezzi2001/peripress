@@ -2,7 +2,6 @@ package org.bondarenko.command.impl;
 
 import org.bondarenko.command.Command;
 import org.bondarenko.service.AuthService;
-import org.bondarenko.service.validation.AuthValidationProxy;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +14,11 @@ import static org.bondarenko.constant.Pages.SIGN_IN;
 import static org.bondarenko.constant.Paths.HOME;
 
 public class LoginCommand implements Command {
-    private final AuthService authService = new AuthValidationProxy();
+    private final AuthService authService;
+
+    public LoginCommand(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

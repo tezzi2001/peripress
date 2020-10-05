@@ -3,8 +3,6 @@ package org.bondarenko.service.impl;
 import org.bondarenko.constant.Role;
 import org.bondarenko.db.dao.PublishingHouseDao;
 import org.bondarenko.db.dao.UserDao;
-import org.bondarenko.db.dao.impl.PublishingHouseDaoImpl;
-import org.bondarenko.db.dao.impl.UserDaoImpl;
 import org.bondarenko.db.entity.PublishingHouse;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.service.AdminService;
@@ -15,9 +13,9 @@ public class AdminServiceImpl implements AdminService {
     private final PublishingHouseDao publishingHouseDao;
     private final UserDao userDao;
 
-    public AdminServiceImpl() {
-        this.publishingHouseDao = new PublishingHouseDaoImpl();
-        userDao = new UserDaoImpl();
+    public AdminServiceImpl(PublishingHouseDao publishingHouseDao, UserDao userDao) {
+        this.publishingHouseDao = publishingHouseDao;
+        this.userDao = userDao;
     }
 
     @Override

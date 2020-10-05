@@ -4,8 +4,6 @@ import org.bondarenko.core.filtering.FilteringOptions;
 import org.bondarenko.core.sorting.SortingOptions;
 import org.bondarenko.db.dao.PublishingHouseDao;
 import org.bondarenko.db.dao.UserDao;
-import org.bondarenko.db.dao.impl.PublishingHouseDaoImpl;
-import org.bondarenko.db.dao.impl.UserDaoImpl;
 import org.bondarenko.db.entity.PublishingHouse;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.service.UserService;
@@ -21,9 +19,9 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private static final int NUMBER_OF_PUBLISHING_HOUSES_ON_PAGE = 4;
 
-    public UserServiceImpl() {
-        this.publishingHouseDao = new PublishingHouseDaoImpl();
-        userDao = new UserDaoImpl();
+    public UserServiceImpl(PublishingHouseDao publishingHouseDao, UserDao userDao) {
+        this.publishingHouseDao = publishingHouseDao;
+        this.userDao = userDao;
     }
 
     @Override

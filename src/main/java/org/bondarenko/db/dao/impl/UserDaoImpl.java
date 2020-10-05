@@ -20,9 +20,13 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     private static final String SAVE_QUERY = "INSERT INTO user_t (username, password, email, role, balance) VALUES (?, ?, ?, ?, ?);";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM user_t WHERE id = ?;";
     private static final String UPDATE_QUERY = "UPDATE user_t SET username = ?, password = ?, email = ?, role = ?, balance = ? WHERE id = ?;";
-
-    private static final UserPublishingHouseDao USER_PUBLISHING_HOUSE_DAO = new UserPublishingHouseDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
+
+    private final UserPublishingHouseDao userPublishingHouseDao;
+
+    public UserDaoImpl(UserPublishingHouseDao userPublishingHouseDao) {
+        this.userPublishingHouseDao = userPublishingHouseDao;
+    }
 
     @Override
     public Optional<User> find(long id) {
@@ -94,7 +98,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
                     UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
                     userPublishingHouse.setUserId(user.getId());
                     userPublishingHouse.setPublishingHouseId(publishingHouse.getId());
-                    if (!USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse)) {
+                    if (!userPublishingHouseDao.save(userPublishingHouse)) {
                         connection.rollback();
                         return false;
                     }
@@ -121,7 +125,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     @Override
     public List<User> findAllByPublishingHouseId(long id) {
         List<User> subscribers = new ArrayList<>();
-        List<UserPublishingHouse> userPublishingHouses = USER_PUBLISHING_HOUSE_DAO.findAllByPublishingHouseId(id);
+        List<UserPublishingHouse> userPublishingHouses = userPublishingHouseDao.findAllByPublishingHouseId(id);
         for (UserPublishingHouse userPublishingHouse : userPublishingHouses) {
             subscribers.add(find(userPublishingHouse.getUserId()).orElse(null));
         }
@@ -157,7 +161,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
                 statement.setInt(5, user.getBalance());
                 statement.setLong(6, user.getId());
                 if (statement.executeUpdate() == 1) {
-                    List<Long> dbPublishingHouseIds = USER_PUBLISHING_HOUSE_DAO.findAllByUserId(user.getId())
+                    List<Long> dbPublishingHouseIds = userPublishingHouseDao.findAllByUserId(user.getId())
                             .stream().map(UserPublishingHouse::getPublishingHouseId).collect(Collectors.toList());
                     List<Long> actualPublishingHouseIds = user.getSubscriptions()
                             .stream().map(PublishingHouse::getId).collect(Collectors.toList());
@@ -176,13 +180,13 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
                         }
                     }
                     for (Long dbPublishingHouseId : dbPublishingHouseIds) {
-                        USER_PUBLISHING_HOUSE_DAO.delete(dbPublishingHouseId);
+                        userPublishingHouseDao.delete(dbPublishingHouseId);
                     }
                     for (Long actualPublishingHouseId : actualPublishingHouseIds) {
                         UserPublishingHouse userPublishingHouse = new UserPublishingHouse();
                         userPublishingHouse.setUserId(user.getId());
                         userPublishingHouse.setPublishingHouseId(actualPublishingHouseId);
-                        USER_PUBLISHING_HOUSE_DAO.save(userPublishingHouse);
+                        userPublishingHouseDao.save(userPublishingHouse);
                     }
                     connection.commit();
                     return true;
