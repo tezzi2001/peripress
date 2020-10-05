@@ -73,6 +73,21 @@
         <ul class="sidenav indigo lighten-5" id="mobile-menu">
             <li><h3 class="center-align">Peripress</h3></li>
             <hr>
+            <% if (Role.ADMIN.equals(session.getAttribute(ROLE))) {%>
+            <li>
+                <a href="${pageContext.request.contextPath}${Paths.EDIT_PUBLICATION_HOUSE}" class="indigo-text">
+                    <i class="material-icons indigo-text">create</i>
+                    <fmt:message key="editPublishingHouses" />
+                </a>
+            </li>
+            <li>
+                <a href="${pageContext.request.contextPath}${Paths.BAN}" class="indigo-text">
+                    <i class="material-icons indigo-text">block</i>
+                    <fmt:message key="banning" />
+                </a>
+            </li>
+            <hr>
+            <% } %>
             <li>
                 <a href="#">
                     <i class="material-icons">language</i>
