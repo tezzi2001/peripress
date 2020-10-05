@@ -21,6 +21,7 @@ public class DataSource {
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
         String url = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+        url += "?useUnicode=true&amp;characterEncoding=UTF-8";
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);

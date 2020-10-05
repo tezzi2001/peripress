@@ -49,6 +49,9 @@ public class DispatcherFilter implements Filter {
         Role currentRole = PROTECTED_URIS.get(uri);
         Role sessionRole = (Role) session.getAttribute(ROLE);
 
+        response.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
+
         httpServletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
         if (Role.ADMIN.equals(sessionRole)) {
