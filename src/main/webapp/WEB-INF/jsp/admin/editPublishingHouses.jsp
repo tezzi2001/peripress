@@ -51,7 +51,7 @@
 </head>
 <body>
 
-<jsp:include page="components/userHeader.jsp" />
+<jsp:include page="../components/userHeader.jsp" />
 
 <section class="section container">
     <div class="row">
@@ -96,7 +96,7 @@
     </div>
 </section>
 
-<jsp:include page="components/footer.jsp" />
+<jsp:include page="../components/footer.jsp" />
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
