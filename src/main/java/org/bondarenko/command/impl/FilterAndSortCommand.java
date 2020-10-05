@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import static org.bondarenko.constant.Jsp.*;
 import static org.bondarenko.constant.Pages.PUBLICATION_HOUSES;
-import static org.bondarenko.constant.Paths.FILTER_AND_SORT;
 
 public class FilterAndSortCommand implements Command {
     private final UserService userService = new UserServiceImpl();

@@ -5,7 +5,7 @@ import org.bondarenko.db.entity.UserPublishingHouse;
 import java.util.List;
 
 public interface UserPublishingHouseDao extends Dao<UserPublishingHouse> {
-    public List<UserPublishingHouse> findAllByUserId(long userId);
-    public List<UserPublishingHouse> findAllByPublishingHouseId(long publishingHouseId);
-    public boolean deleteByUserId(long userId);
+    List<UserPublishingHouse> findAllByUserId(long userId);
+    List<UserPublishingHouse> findAllByPublishingHouseId(long publishingHouseId);
+    boolean deleteByUserId(long userId);
 }

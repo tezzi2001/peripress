@@ -1,12 +1,12 @@
 package org.bondarenko.service.impl;
 
+import org.bondarenko.core.filtering.FilteringOptions;
+import org.bondarenko.core.sorting.SortingOptions;
 import org.bondarenko.db.dao.PublishingHouseDao;
 import org.bondarenko.db.dao.UserDao;
 import org.bondarenko.db.dao.impl.PublishingHouseDaoImpl;
-import org.bondarenko.core.filtering.FilteringOptions;
 import org.bondarenko.db.dao.impl.UserDaoImpl;
 import org.bondarenko.db.entity.PublishingHouse;
-import org.bondarenko.core.sorting.SortingOptions;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.service.UserService;
 

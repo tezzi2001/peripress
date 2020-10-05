@@ -1,9 +1,9 @@
 package org.bondarenko.db.dao.impl;
 
+import org.bondarenko.constant.Role;
 import org.bondarenko.db.dao.UserDao;
 import org.bondarenko.db.dao.UserPublishingHouseDao;
 import org.bondarenko.db.entity.PublishingHouse;
-import org.bondarenko.constant.Role;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.db.entity.UserPublishingHouse;
 import org.slf4j.Logger;

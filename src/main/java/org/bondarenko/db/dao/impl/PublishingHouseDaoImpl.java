@@ -2,8 +2,11 @@ package org.bondarenko.db.dao.impl;
 
 import org.bondarenko.core.filtering.Theme;
 import org.bondarenko.core.filtering.Type;
-import org.bondarenko.db.dao.*;
-import org.bondarenko.db.entity.*;
+import org.bondarenko.db.dao.PublishingHouseDao;
+import org.bondarenko.db.dao.UserPublishingHouseDao;
+import org.bondarenko.db.entity.PublishingHouse;
+import org.bondarenko.db.entity.User;
+import org.bondarenko.db.entity.UserPublishingHouse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

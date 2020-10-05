@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.bondarenko.constant.Jsp.BAN_ID;
-import static org.bondarenko.constant.Pages.PUBLICATION_HOUSES;
 import static org.bondarenko.constant.Paths.HOME;
 
 public class BanCommand implements Command {

@@ -1,4 +1,5 @@
 package org.bondarenko.command.provider;
+
 import org.bondarenko.command.Command;
 import org.bondarenko.command.impl.*;
 import org.bondarenko.command.provider.factory.CommandProvider;
@@ -12,8 +13,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.bondarenko.constant.Pages.SIGN_IN;
+import static org.bondarenko.constant.Pages.SIGN_UP;
 import static org.bondarenko.constant.Paths.*;
-import static org.bondarenko.constant.Pages.*;
 
 public final class GetCommandProvider implements CommandProvider {
     private final Map<String, Command> commandMap = new HashMap<>();

@@ -1,8 +1,8 @@
 package org.bondarenko.service;
 
-import org.bondarenko.db.entity.PublishingHouse;
-import org.bondarenko.core.sorting.SortingOptions;
 import org.bondarenko.core.filtering.FilteringOptions;
+import org.bondarenko.core.sorting.SortingOptions;
+import org.bondarenko.db.entity.PublishingHouse;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;

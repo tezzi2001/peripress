@@ -1,8 +1,8 @@
 package org.bondarenko.service.impl;
 
+import org.bondarenko.constant.Role;
 import org.bondarenko.db.dao.UserDao;
 import org.bondarenko.db.dao.impl.UserDaoImpl;
-import org.bondarenko.constant.Role;
 import org.bondarenko.db.entity.User;
 import org.bondarenko.service.AuthService;
 

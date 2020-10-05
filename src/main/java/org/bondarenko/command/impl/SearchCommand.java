@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.bondarenko.constant.Jsp.SEARCH;
 import static org.bondarenko.constant.Jsp.PUBLICATION_HOUSES_LIST;
+import static org.bondarenko.constant.Jsp.SEARCH;
 import static org.bondarenko.constant.Pages.PUBLICATION_HOUSES;
 
 public class SearchCommand implements Command {
